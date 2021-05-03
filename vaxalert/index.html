@@ -1,0 +1,96 @@
+<head>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<script type="text/javascript" language="javascript">
+const userAction = async () => {
+var f = document.getElementsByTagName('form')[0];
+  if(f.checkValidity()) {
+	document.getElementById('errorMessage').innerHTML="Subscription Updated.";
+	document.getElementById('errorMessage').style.color="green";
+  
+	var email = document.getElementById('id_email').value;
+	var pin = document.getElementById('id_pincode').value;
+	var min_age_18 = document.getElementById('id_18').checked
+	var min_age_45 = document.getElementById('id_45').checked
+	var json = {"email":email, "pincode":pin, "min_age_18":min_age_18, "min_age_45":min_age_45}
+    const response = await fetch('https://y3pnnc9lx6.execute-api.ap-south-1.amazonaws.com/al/subscribers', {
+    method: 'POST',
+    body: JSON.stringify(json), // string or object
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  const myJson = await response.json(); //extract JSON from the http response
+  if(myJson.message){
+	document.getElementById('errorMessage').innerHTML=myJson.message;
+			document.getElementById('errorMessage').style.color="red";
+
+	}
+  else{
+	document.getElementById('errorMessage').innerHTML="Subscription Updated.";
+		document.getElementById('errorMessage').style.color="green";
+  }
+  } else {
+	document.getElementById('errorMessage').innerHTML="Missing required fields";
+			document.getElementById('errorMessage').style.color="red";
+  }
+  
+  // do something with myJson
+}
+</script>
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css">
+<form class="form-horizontal" action="return false;" id="form1"> 
+<fieldset>
+
+<!-- Form Name -->
+<legend>Subscribe for vaccine shots availability alerts</legend>
+<div class="form-group">
+  <label id="errorMessage" class="col-md-4 control-label" for="singlebutton" style="color:red;"></label>
+</div>
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput">Email Id*</label>  
+  <div class="col-md-4">
+  <input id="id_email" name="textinput" type="text" placeholder="email@domain.com" class="form-control input-md" required="">
+  <span class="help-block">Send alerts to this email id</span>  
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput" required>Pincode*</label>  
+  <div class="col-md-4">
+  <input id="id_pincode" name="textinput" type="text" placeholder="110011" class="form-control input-md" required>
+  <span class="help-block">Area pin code for which you want to check vaccine shots availability. If the this value is less than 6 digits, you will get alerts for the pin codes that are relevant to the value you entered. E.g. Value of 411 would alert you for all the pin codes that start with 411. One email id can subscribe for one pin code.</span>  
+  </div>
+</div>
+
+<!-- Multiple Checkboxes -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="checkboxes">Age limit</label>
+  <div class="col-md-4">
+  <div class="checkbox">
+    <label for="checkboxes-0">
+      <input id="id_18" type="checkbox" name="checkboxes" id="checkboxes-0" value="1" checked>
+      18+ <span class="help-block">Alert me if vaccine slots are available for 18+ age limit</span>  
+    </label>
+	</div>
+  <div class="checkbox">
+    <label for="checkboxes-1">
+      <input id="id_45" type="checkbox" name="checkboxes" id="checkboxes-1" value="2" checked>
+      45+ <span class="help-block">Alert me if vaccine slots are available for 45+ age limit</span>  
+    </label>
+	
+	</div>
+  </div>
+</div>
+<!-- Button -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="singlebutton"></label>
+  <div class="col-md-4">
+    <button onclick="javascript:userAction(); return false;" id="singlebutton" name="singlebutton" class="btn btn-primary">Subscribe</button> <span class="help-block">If the same email id used again, the last subscription will be updated with the current values.</span>
+  </div>
+</div>
+</fieldset>
+</form>
